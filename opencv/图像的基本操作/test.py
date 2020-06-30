@@ -72,28 +72,109 @@ import time
 #
 # time.sleep(10)
 
+# def cv_show(name,img):
+#     cv2.imshow(name,img)
+#     cv2.waitKey(5000)
+#
+# img = cv2.imread('../imgs/cat2.jpg')
+# cv_show('img',img)
+# # 只保留R
+# imgr = img.copy()
+# imgr[:,:,0]=0
+# imgr[:,:,1]=0
+# cv_show('R',imgr)
+#
+# # 只保留G
+# imgg = img.copy()
+# imgg[:,:,0]=0
+# imgg[:,:,2]=0
+# cv_show('G',imgg)
+#
+# # 只保留B
+# imgb = img.copy()
+# imgb[:,:,1]=0
+# imgb[:,:,2]=0
+# cv_show('B',imgb)
+#
+# time.sleep(10)
+
+
+
+# img = cv2.imread('../imgs/dog1.jpg')
+#
+# top_size,botton_size,left_size,right_size=(50,50,50,50)
+#
+# replicate = cv2.copyMakeBorder(img,top_size,botton_size,left_size,right_size,borderType = cv2.BORDER_REPLICATE)
+# reflect = cv2.copyMakeBorder(img,top_size,botton_size,left_size,right_size,borderType = cv2.BORDER_REFLECT)
+# reflect101 = cv2.copyMakeBorder(img,top_size,botton_size,left_size,right_size,borderType = cv2.BORDER_REFLECT_101)
+# wrap = cv2.cv2.copyMakeBorder(img,top_size,botton_size,left_size,right_size,borderType = cv2.BORDER_WRAP)
+# constant = cv2.cv2.copyMakeBorder(img,top_size,botton_size,left_size,right_size,borderType = cv2.BORDER_CONSTANT,value=0)
+#
+# plt.figure()
+# plt.subplot(231)
+# plt.imshow(img,"gray")
+# plt.title('OERPLINAL')
+#
+#
+# plt.subplot(232)
+# plt.imshow(replicate,"gray")
+# plt.title('replicate')
+#
+# plt.subplot(233)
+# plt.imshow(reflect,"gray")
+# plt.title('reflect')
+#
+# plt.subplot(234)
+# plt.imshow(reflect101,"gray")
+# plt.title('reflect101')
+#
+# plt.subplot(235)
+# plt.imshow(wrap,"gray")
+# plt.title('wrap')
+#
+# plt.subplot(236)
+# plt.imshow(constant,"gray")
+# plt.title('constant')
+#
+# plt.show()
+
+# 数值计算
+
+# 图像融合
+
+# def cv_show(name,img):
+#     cv2.imshow(name,img)
+#     cv2.waitKey(5000)
+#
+# img_dog = cv2.imread('../imgs/dog1.jpg')# (313,500,3)
+# img_cat = cv2.imread('../imgs/cat1.jpg')# (312,500,3)
+
+# img_dog = cv2.resize(img_dog,(500,313))
+# img_cat_dog = img_dog+img_cat
+# print(img_cat_dog)
+#
+# cv_show('dog',img_dog)
+# cv_show('cat',img_cat)
+# cv_show('cat_dog',img_cat_dog)
+#
+# time.sleep(10)
+
+
 def cv_show(name,img):
     cv2.imshow(name,img)
     cv2.waitKey(5000)
 
-img = cv2.imread('../imgs/cat2.jpg')
-cv_show('img',img)
-# 只保留R
-imgr = img.copy()
-imgr[:,:,0]=0
-imgr[:,:,1]=0
-cv_show('R',imgr)
+# 将dog横方向扩大3倍
+# res = cv2.resize(img_dog,(0,0),fx=3,fy=1)
+# plt.imshow(res)
+# plt.show()
 
-# 只保留G
-imgg = img.copy()
-imgg[:,:,0]=0
-imgg[:,:,2]=0
-cv_show('G',imgg)
+img_dog = cv2.imread('../imgs/dog1.jpg')# (313,500,3)
+img_cat = cv2.imread('../imgs/cat1.jpg')# (312,500,3)
 
-# 只保留B
-imgb = img.copy()
-imgb[:,:,1]=0
-imgb[:,:,2]=0
-cv_show('B',imgb)
+img_dog = cv2.resize(img_dog,(500,313))
+# 图像融合（透明度）
+res = cv2.addWeighted(img_dog,0.4,img_cat,0.6,0)
+plt.imshow(res)
+plt.show()
 
-time.sleep(10)
