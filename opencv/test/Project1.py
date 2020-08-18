@@ -52,7 +52,7 @@ def findColor(img,myColors,myColorValues):
     return newPoints
 
 def getContours(img):
-    contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+    _,contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     x,y,w,h = 0,0,0,0
     for cnt in contours:
         area = cv2.contourArea(cnt)

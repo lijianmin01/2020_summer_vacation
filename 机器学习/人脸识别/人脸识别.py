@@ -6,6 +6,9 @@ cap = cv2.VideoCapture(0)
 scaling_factor = 0.5
 # 启动一个无限循环来采集帧，直到按下esc键，从网络摄像头读取帧
 
+cap.set(3,2000)
+cap.set(4,2000)
+
 while True:
     # 采集当前画面
     ret, frame = cap.read()

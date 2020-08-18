@@ -1,0 +1,26 @@
+pip install jupyter-themes -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+
+pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install kivy.deps.gstreamer -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install FPDF -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip3 install opencv-python==3.4.3.18 i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip3 install python-docx -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install --upgrade jupyter  -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install docx  -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+1.pyInstaller 一般安装在python安装路径/Script下面
+pyinstaller -F xxx.py  打包exe命令，但是会有黑窗口
+pyinstaller -F  -w xxx.py去除黑窗口
+
+
+pip install torch==1.5.1+cpu torchvision==0.6.1+cpu -f https://download.pytorch.org/whl/torch_stable.html -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+pip install opencv-contrib-python==3.4.2.16 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install opencv-python==3.4.2.16 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+https://pan.baidu.com/s/1KPwj-mM7c_Ot7v8qSNjJ2w#list/path=%2Fsharelink3113760864-430073073042188%2F%E2%97%8F20%E5%B9%B4%E6%95%B0%E5%AD%A6%EF%BC%88%E5%85%A8%E7%A8%8B%EF%BC%8C%E5%90%AB%E6%8A%BC%E9%A2%98%E5%A4%8D%E8%AF%95%EF%BC%89%E2%97%8F%2F20%E6%95%B0%E5%AD%A6%E2%80%94%E7%AC%AC%E4%B8%80%E5%AE%B6%E7%89%88%E6%9C%AC&parentPath=%2Fsharelink3113760864-430073073042188

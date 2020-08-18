@@ -11,7 +11,10 @@ if face_cascade.empty():
 # 初始化视频采集对象
 cap = cv2.VideoCapture(0)
 # 定义图像向下采样的比例系数
-scaling_factor = 0.5
+scaling_factor = 0.8
+
+cap.set(3,2000)
+cap.set(4,2000)
 # 循环采集直到按下Esc键
 while True:
     # 采集当前帧并进行调整
