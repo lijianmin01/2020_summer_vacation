@@ -133,10 +133,12 @@ def DOC(url):
         try:
             document.save(new_file_name+'.docx')
         except:
-            document.save(new_file_name+ '——copy.docx')
+            new_file_name = new_file_name+'——copy'
+            document.save(new_file_name+ '.docx')
 
     f.close()
     os.remove(filename)
+    return new_file_name+'.docx'
 
 
 def PPT(url):
@@ -242,6 +244,15 @@ def PDF(url):
 
     del_files(doc_id)
 
+def is_file_null(filename):
+    doc = Document(filename)
+    if len(doc.paragraphs) == 0:
+        os.remove(filename)
+        return True
+    else:
+        return False
+
+
 def main():
     # url = "https://wenku.baidu.com/view/b754ca01d4bbfd0a79563c1ec5da50e2534dd105.html?fr=search-4"
     # PPT(url)
@@ -253,8 +264,11 @@ def main():
     # TXT(url)
 
     url = "https://wenku.baidu.com/view/aacec5715527a5e9856a561252d380eb62942380.html?fr=search-4"
-    DOC(url)
-    # TXT(url)
+    file_name = DOC(url)
+
+    if is_file_null(file_name):
+        TXT(url)
+
     pass
 
 if __name__ == "__main__":

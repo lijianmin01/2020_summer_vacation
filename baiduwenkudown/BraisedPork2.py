@@ -1,7 +1,4 @@
 import requests
-import re
-import argparse
-import sys
 import json
 import os
 from docx import Document
@@ -13,7 +10,12 @@ import re
 import glob
 import fitz
 
+import time
+
 # 图片转成PDF
+from pip._vendor.distlib._backport import shutil
+
+
 def pic2pdf(doc_id,url):
     doc = fitz.open()
     for img in sorted(glob.glob(doc_id+"/*")):  # 读取图片，确保按文件名排序
@@ -25,8 +27,10 @@ def pic2pdf(doc_id,url):
             doc.insertPDF(imgpdf)                   # 将当前页插入文档
         except:
             continue
-
-    new_file_name = find_file_name(url)
+    try:
+        new_file_name = find_file_name(url)
+    except:
+        new_file_name = time.strftime("%H%M%S", time.localtime())
 
     try:
         doc.save(new_file_name+".pdf")                   # 保存pdf文件
@@ -77,75 +81,90 @@ def find_file_name(url):
     except:
         return str(title)
 
+
+# 将TxT文件转成docx文件
+def txt_docx(filename,url):
+    # 创建一个doc文档
+    document = Document()
+    # document = docx.Document(docx=os.path.join(os.getcwd(), 'default.docx'))
+    # 字体
+    document.styles['Normal'].font.name = u'宋体'
+    document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
+
+    row = 0
+    new_file_name=''
+    with open(os.path.abspath('.')+"\\"+filename, 'r+', encoding='utf-8') as f:
+        lines = f.readlines()
+        for line in lines:
+            # print(len(line))
+            if len(line) <= 3 or re.match('）', line):
+                continue
+            else:
+                blank_line = 0
+                # 第一行记录文件名
+                if row == 0:
+                    new_file_name = line
+                    row += 1
+                    # 插入文件标题
+                    document.add_heading("仅供学习与交流", 0)
+                    document.add_paragraph(new_file_name)
+                else:
+                    if re.match('A|B|C|D', line):
+                        document.add_paragraph('      ' + line)
+                    else:
+                        document.add_paragraph(line)
+
+        # 删除空白行
+        for paragraphs in document.paragraphs:
+            if paragraphs.text == "\n":
+                paragraphs.clear()
+        try:
+            new_file_name = find_file_name(url)
+        except:
+            new_file_name = time.strftime("%H%M%S", time.localtime())
+
+        try:
+            document.save(new_file_name + '.docx')
+        except:
+            new_file_name = new_file_name + '——copy'
+            document.save(new_file_name + '.docx')
+
+    f.close()
+    os.remove(filename)
+
+    return new_file_name + '.docx'
+
 #根据文件决定函数
 y = 0
-filename = ''
 def DOC(url):
     doc_id = re.findall('view/(.*).html', url)[0]
     html = requests.get(url).text
-    lists = re.findall('(https.*?0.json.*?)\\\\x22}', html)
-    lenth = (len(lists) // 2)
+    lists=re.findall('(https.*?0.json.*?)\\\\x22}',html)
+    lenth = (len(lists)//2)
     NewLists = lists[:lenth]
-    for i in range(len(NewLists)):
-        NewLists[i] = NewLists[i].replace('\\', '')
-        txts = requests.get(NewLists[i]).text
-        txtlists = re.findall('"c":"(.*?)".*?"y":(.*?),', txts)
-
-        print(len(txtlists))
-        for i in range(0, len(txtlists)):
+    filename = doc_id + '.txt'
+    if not os.path.exists(filename):
+        file = open(filename, "w+")
+        file.close()
+    for i in range(len(NewLists)) :
+        NewLists[i] = NewLists[i].replace('\\','')
+        txts=requests.get(NewLists[i]).text
+        txtlists = re.findall('"c":"(.*?)".*?"y":(.*?),',txts)
+        for i in range(0,len(txtlists)):
             global y
-            print(txtlists[i][0].encode('utf-8').decode('unicode_escape', 'ignore'))
+            print(txtlists[i][0].encode('utf-8').decode('unicode_escape','ignore'))
             if y != txtlists[i][1]:
                 y = txtlists[i][1]
                 n = '\n'
             else:
                 n = ''
-            global filename
-            filename = doc_id + '.txt'
-            with open(filename, 'a', encoding='utf-8') as f:
-                f.write(n + txtlists[i][0].encode('utf-8').decode('unicode_escape', 'ignore').replace('\\', ''))
-        print("文档保存在" + filename)
+            with open(filename,'a',encoding='utf-8') as f:
+                f.write(n+txtlists[i][0].encode('utf-8').decode('unicode_escape','ignore').replace('\\',''))
+        #print("文档保存在"+filename)
+    file_name = txt_docx(filename,url)
+    return file_name
 
-    # # 创建一个doc文档
-    # document = Document()
-    # # 字体
-    # document.styles['Normal'].font.name = u'宋体'
-    # document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
-    #
-    # row = 0
-    # with open(filename,'r+',encoding='utf-8') as f:
-    #     lines = f.readlines()
-    #     for line in lines:
-    #         # print(len(line))
-    #         if len(line)<=3 or re.match('）',line):
-    #             continue
-    #         else:
-    #             blank_line = 0
-    #             # 第一行记录文件名
-    #             if row==0:
-    #                 new_file_name = line
-    #                 row+=1
-    #                 # 插入文件标题
-    #                 document.add_heading(new_file_name, 0)
-    #             else:
-    #                 if re.match('A|B|C|D',line):
-    #                     document.add_paragraph('      '+line)
-    #                 else:
-    #                     document.add_paragraph(line)
-    #
-    #     # 删除空白行
-    #     for paragraphs in document.paragraphs:
-    #         if paragraphs.text == "\n":
-    #             paragraphs.clear()
-    #
-    #     new_file_name = find_file_name(url)
-    #     try:
-    #         document.save(new_file_name+'.docx')
-    #     except:
-    #         document.save(new_file_name+ '——copy.docx')
-    #
-    # f.close()
-    # os.remove(filename)
+
 
 
 def PPT(url):
@@ -166,7 +185,7 @@ def PPT(url):
     # print("PPT图片保存在" + doc_id +"文件夹")
 
     pic2pdf(doc_id,url)
-    os.removedirs(doc_id)
+    del_files(doc_id)
 
 
 def TXT(url):
@@ -190,45 +209,8 @@ def TXT(url):
             f.write(texts[i])
     print("文档保存在" + filename)
 
-    new_file_name = None
-    # 创建一个doc文档
-    document = Document()
-    # 字体
-    document.styles['Normal'].font.name = u'宋体'
-    document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
+    txt_docx(filename,url)
 
-    row = 0
-    with open(filename, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-        for line in lines:
-            # print(len(line))
-            if len(line) <= 3 or re.match('）', line):
-                continue
-            else:
-                blank_line = 0
-                # 第一行记录文件名
-                if row == 0:
-                    new_file_name = line
-                    row += 1
-                    # 插入文件标题
-                    document.add_heading(new_file_name, 0)
-                else:
-                    if re.match('A|B|C|D', line):
-                        document.add_paragraph('      ' + line)
-                    else:
-                        document.add_paragraph(line)
-
-        # 删除空白行
-        for paragraphs in document.paragraphs:
-            if paragraphs.text == "\n":
-                paragraphs.clear()
-        try:
-            document.save(new_file_name[:-2] + '.docx')
-        except:
-            document.save(new_file_name[:-2] + '——copy.docx')
-
-    f.close()
-    os.remove(filename)
 
 def PDF(url):
     doc_id = re.findall('view/(.*).html',url)[0]
@@ -251,15 +233,34 @@ def PDF(url):
 
     del_files(doc_id)
 
-def main():
-    # url = 'https://wenku.baidu.com/view/b4841a88a0116c175f0e4866.html'
-    # DOC(url)
 
-    url = 'https://wenku.baidu.com/view/ae5c0bf0f18583d048645948.html'
-    DOC(url)
-    pass
+def is_file_null(filename):
+    doc = Document(filename)
+    if len(doc.paragraphs) == 0:
+        os.remove(filename)
+        return True
+    else:
+        return False
 
-if __name__ == "__main__":
-    main()
+# def main():
+#
+#     # url = 'https://wenku.baidu.com/view/b4a5b47001f69e31433294a6.html?fr=search'       # word
+#     # url = 'https://wenku.baidu.com/view/f7637790bf1e650e52ea551810a6f524cdbfcb63.html?fr=search-4-aladdin'
+#     #
+#     #
+#     # filename = DOC(url)
+#     # if is_file_null(filename):
+#     #     print("Doc读取失败，正尝试下种方法")
+#     #     TXT(url)
+#
+#
+#     # url = 'https://wenku.baidu.com/view/f5dfac69b84ae45c3b358ccb.html'
+#     # PPT(url)
+#
+#     url = 'https://wenku.baidu.com/view/d155ebd8c4da50e2524de518964bcf84b9d52d9b.html?fr=search'
+#     PPT(url)
+#
+# if __name__ == "__main__":
+#     main()
 
 #DOC("https://wenku.baidu.com/view/b4841a88a0116c175f0e4866.html")
